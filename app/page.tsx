@@ -2,19 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-
-interface User {
-  id: number;
-  email: string;
-  first_name: string;
-  last_name: string;
-  avatar: string;
-}
-
-interface UserPagination {
-  page: number;
-  total_pages: number;
-}
+import { User, UserPagination } from "./types";
 
 export default function Home() {
   const [users, setUsers] = useState<User[]>([]);
