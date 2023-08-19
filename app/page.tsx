@@ -1,27 +1,79 @@
 "use client"
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { User, UserPagination } from "./types";
 
 export default function Home() {
   const [users, setUsers] = useState<User[]>([]);
   const [pagination, setPagination] = useState<UserPagination>();
+  const [loading, setLoading] = useState(false);
+  const observerTarget = useRef(null);
 
-  const getUsersData = async (page = 1) => {
-    const res = await (await fetch(`https://reqres.in/api/users?page=${page}`)).json();
+  const getInitialUsers = async () => {
+    setLoading(true);
 
-    if (!res) return console.log('Error fetching data');
-
-    setUsers(res.data);
-    setPagination({
-      page: res.page,
-      total_pages: res.total_pages,
-    });
+    try {
+      const res = await (await fetch('https://reqres.in/api/users?page=1')).json();
+      setUsers(res.data);
+      setPagination({
+        page: res.page,
+        total_pages: res.total_pages,
+      });
+    } catch (error) {
+      
+    } finally {
+      setLoading(false);
+    }
   };
 
+  const getMoreUsers = useCallback(async () => {
+    const nextPage = pagination && pagination?.page + 1;
+    if (!loading && nextPage && nextPage <= pagination?.total_pages) {
+      setLoading(true);
+  
+      try {
+        const res = await (await fetch(`https://reqres.in/api/users?page=${nextPage}`)).json();
+        setUsers([
+          ...users,
+          ...res.data,
+        ]);
+        setPagination({
+          page: res.page,
+          total_pages: res.total_pages,
+        });
+      } catch (error) {
+        
+      } finally {
+        setLoading(false);
+      }
+    }
+  }, [loading, pagination, users]);
+
   useEffect(() => {
-    getUsersData();
+    let observerRefValue: Element | null = null;
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      if (entries[0].isIntersecting) {
+        getMoreUsers();
+      }
+    };
+
+    const observer = new IntersectionObserver(observerCallback, { threshold: 1 });
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+      observerRefValue = observerTarget.current;
+    }
+
+    return () => {
+      if (observerRefValue) {
+        observer.unobserve(observerRefValue);
+      }
+    };
+  }, [getMoreUsers, observerTarget]);
+
+  useEffect(() => {
+    getInitialUsers();
   }, []);
   
   return (
@@ -31,7 +83,7 @@ export default function Home() {
       </p>
       {users && users.map((user) => (
         // create a tailwind user card for each user
-        <div key={user.first_name} className="flex flex-col items-center justify-center rounded-lg shadow-lg bg-gray-100 p-4 m-4">
+        <div key={user.id} className="flex flex-col items-center justify-center rounded-lg shadow-lg bg-gray-100 p-4 m-4">
           <Image width={300} height={300} className="w-32 h-32 rounded-full" src={user.avatar} alt={user.first_name} />
           <div className="text-center">
             <h2 className="text-lg font-semibold">{user.first_name} {user.last_name}</h2>
@@ -39,6 +91,7 @@ export default function Home() {
           </div>
         </div>
       ))}
+      <div ref={observerTarget}></div>
     </main>
   )
 }
