@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { User, UserPagination } from "./types";
+import Loader from "@/components/Loader/Loader";
 
 export default function Home() {
   const [users, setUsers] = useState<User[]>([]);
@@ -12,6 +13,7 @@ export default function Home() {
 
   const getInitialUsers = async () => {
     setLoading(true);
+    await new Promise(r => setTimeout(r, 3000));
 
     try {
       const res = await (await fetch('https://reqres.in/api/users?page=1')).json();
@@ -75,6 +77,12 @@ export default function Home() {
   useEffect(() => {
     getInitialUsers();
   }, []);
+
+  if (loading && !users.length) return (
+    <main className="flex min-h-screen items-center justify-center">
+      <Loader />
+    </main>
+  );
   
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
