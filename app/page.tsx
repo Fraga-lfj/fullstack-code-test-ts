@@ -23,7 +23,7 @@ export default function Home() {
         total_pages: res.total_pages,
       });
     } catch (error) {
-      
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -45,7 +45,7 @@ export default function Home() {
           total_pages: res.total_pages,
         });
       } catch (error) {
-        
+        console.error(error);
       } finally {
         setLoading(false);
       }
@@ -54,6 +54,7 @@ export default function Home() {
 
   useEffect(() => {
     let observerRefValue: Element | null = null;
+
     const observerCallback = (entries: IntersectionObserverEntry[]) => {
       if (entries[0].isIntersecting) {
         getMoreUsers();
@@ -90,14 +91,24 @@ export default function Home() {
         <ul className="divide-y">
           {users && users.map((user) => (
             <li key={user.id} className="flex items-center py-3">
-              <Image width={1000} height={1000} src={user.avatar} alt="User Avatar" className="w-20 h-20 md:w-40 md:h-40 rounded-full border border-gray-300" />
-              <span className="ml-4 md:ml-8 text-lg md:text-xl">{user.first_name} {user.last_name}</span>
+              <Image
+                width={1000}
+                height={1000}
+                src={user.avatar}
+                alt={`${user.last_name} Avatar`}
+                className="w-20 h-20 md:w-40 md:h-40 rounded-full border border-gray-300"
+              />
+              <span className="ml-4 md:ml-8 text-lg md:text-xl">
+                {user.first_name} {user.last_name}
+              </span>
             </li>
           ))}
         </ul>
       </div>
       {users && <div ref={observerTarget}></div>}
-      {pagination?.page === pagination?.total_pages && <p className="text-gray-600">No more users</p>}
+      {pagination?.page === pagination?.total_pages &&
+        <p className="text-gray-600">No more users</p>
+      }
     </main>
   )
 }
