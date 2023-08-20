@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { User, UserPagination } from "./types";
 import Loader from "@/components/Loader/Loader";
+import Link from "next/link";
 
 export default function Home() {
   const [users, setUsers] = useState<User[]>([]);
@@ -87,21 +88,25 @@ export default function Home() {
   
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-12 md:p-24">
+      <h1 className="text-2xl md:text-4xl font-bold mb-8">Users</h1>
+      <p className="text-gray-600 mb-8">Scroll down to load more users, click on a user to see more details.</p>
       <div className="container mx-auto p-4">
         <ul className="divide-y">
           {users && users.map((user) => (
-            <li key={user.id} className="flex items-center py-3">
-              <Image
-                width={1000}
-                height={1000}
-                src={user.avatar}
-                alt={`${user.last_name} Avatar`}
-                className="w-20 h-20 md:w-40 md:h-40 rounded-full border border-gray-300"
-              />
-              <span className="ml-4 md:ml-8 text-lg md:text-xl">
-                {user.first_name} {user.last_name}
-              </span>
-            </li>
+            <Link key={user.id} href={`/users/${user.id}`}>
+              <li className="flex items-center py-3">
+                <Image
+                  width={1000}
+                  height={1000}
+                  src={user.avatar}
+                  alt={`${user.last_name} Avatar`}
+                  className="w-20 h-20 md:w-40 md:h-40 rounded-full border border-gray-300"
+                />
+                <span className="ml-4 md:ml-8 text-lg md:text-xl">
+                  {user.first_name} {user.last_name}
+                </span>
+              </li>
+            </Link>
           ))}
         </ul>
       </div>
