@@ -1,14 +1,15 @@
-import './globals.css'
-import '@/styles/styles.scss'
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import React from 'react';
+import './globals.css';
+import '@/styles/styles.scss';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Fullstack code test TS',
   description: 'Fullstack code test with Typescript and Next.js',
-}
+};
 
 export default function RootLayout({
   children,
@@ -19,5 +20,5 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>{children}</body>
     </html>
-  )
+  );
 }

@@ -1,13 +1,13 @@
-import { User } from "@/app/types";
-import Image from "next/image";
+import { User } from '@/app/types';
+import Image from 'next/image';
 
 async function getUser(userId: string) {
   const req = await fetch(`https://reqres.in/api/users/${userId}`);
- 
+
   if (!req.ok) {
-    throw new Error('Failed to fetch data')
+    throw new Error('Failed to fetch data');
   }
- 
+
   const res = await req.json();
   return res.data;
 }
@@ -22,17 +22,25 @@ export default async function Page({ params }: { params: { id: string } }) {
       </div>
 
       <div className="text-center mt-4 md:mt-8">
-        <h1 className="text-2xl md:text-4xl font-bold">{user.first_name} {user.last_name}</h1>
+        <h1 className="text-2xl md:text-4xl font-bold">
+          {user.first_name}
+          {' '}
+          {user.last_name}
+        </h1>
       </div>
 
       <ul className="mt-6 md:mt-12 space-y-2 pl-4">
         <li>
-          <strong>ID:</strong> <span>{user.id}</span>
+          <strong>ID:</strong>
+          {' '}
+          <span>{user.id}</span>
         </li>
         <li>
-          <strong>Email:</strong> <span>{user.email}</span>
+          <strong>Email:</strong>
+          {' '}
+          <span>{user.email}</span>
         </li>
       </ul>
     </main>
-  )
+  );
 }

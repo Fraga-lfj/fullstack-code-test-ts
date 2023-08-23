@@ -1,10 +1,12 @@
-"use client"
+'use client';
 
-import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { User, UserPagination } from "./types";
-import Loader from "@/components/Loader/Loader";
-import Link from "next/link";
+import {
+  useCallback, useEffect, useRef, useState,
+} from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import Loader from '@/components/Loader/Loader';
+import { User, UserPagination } from './types';
 
 export default function Home() {
   const [users, setUsers] = useState<User[]>([]);
@@ -14,7 +16,7 @@ export default function Home() {
 
   const getInitialUsers = async () => {
     setLoading(true);
-    await new Promise(r => setTimeout(r, 3000));
+    await new Promise((r) => { setTimeout(r, 3000); });
 
     try {
       const res = await (await fetch('https://reqres.in/api/users?page=1')).json();
@@ -24,6 +26,8 @@ export default function Home() {
         total_pages: res.total_pages,
       });
     } catch (error) {
+      // Disabling EsLint rule for console.error in a real app this would need to be implemented
+      // eslint-disable-next-line no-console
       console.error(error);
     } finally {
       setLoading(false);
@@ -31,10 +35,10 @@ export default function Home() {
   };
 
   const getMoreUsers = useCallback(async () => {
-    const nextPage = pagination && pagination?.page + 1;
+    const nextPage = pagination && pagination.page + 1;
     if (!loading && nextPage && nextPage <= pagination?.total_pages) {
       setLoading(true);
-  
+
       try {
         const res = await (await fetch(`https://reqres.in/api/users?page=${nextPage}`)).json();
         setUsers([
@@ -46,6 +50,8 @@ export default function Home() {
           total_pages: res.total_pages,
         });
       } catch (error) {
+        // Disabling EsLint rule for console.error in a real app this would need to be implemented
+        // eslint-disable-next-line no-console
         console.error(error);
       } finally {
         setLoading(false);
@@ -80,12 +86,14 @@ export default function Home() {
     getInitialUsers();
   }, []);
 
-  if (loading && !users.length) return (
-    <main className="flex min-h-screen items-center justify-center">
-      <Loader />
-    </main>
-  );
-  
+  if (loading && !users.length) {
+    return (
+      <main className="flex min-h-screen items-center justify-center">
+        <Loader />
+      </main>
+    );
+  }
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-12 md:p-24">
       <h1 className="text-2xl md:text-4xl font-bold mb-8">Users</h1>
@@ -103,17 +111,18 @@ export default function Home() {
                   className="w-20 h-20 md:w-40 md:h-40 rounded-full border border-gray-300"
                 />
                 <span className="ml-4 md:ml-8 text-lg md:text-xl">
-                  {user.first_name} {user.last_name}
+                  {user.first_name}
+                  {' '}
+                  {user.last_name}
                 </span>
               </li>
             </Link>
           ))}
         </ul>
       </div>
-      {users && <div ref={observerTarget}></div>}
-      {pagination?.page === pagination?.total_pages &&
-        <p className="text-gray-600">No more users</p>
-      }
+      {users && <div ref={observerTarget} />}
+      {pagination?.page === pagination?.total_pages
+        && <p className="text-gray-600">No more users</p>}
     </main>
-  )
+  );
 }
